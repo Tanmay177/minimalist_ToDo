@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimalist Todo List</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Minimalist Todo List</h1>
+        
+        <div class="columns">
+            <div class="column daily-tasks">
+                <h2>Daily Tasks</h2>
+                <div class="add-task">
+                    <input type="text" class="task-input" placeholder="Add a daily task...">
+                    <button class="add-btn">+</button>
+                </div>
+                <ul class="task-list" id="daily-list"></ul>
+            </div>
+
+            <div class="column general-tasks">
+                <h2>General Tasks</h2>
+                <div class="add-task">
+                    <input type="text" class="task-input" placeholder="Add a general task...">
+                    <button class="add-btn">+</button>
+                </div>
+                <ul class="task-list" id="general-list"></ul>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html> 
