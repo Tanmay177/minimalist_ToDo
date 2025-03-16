@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark-mode">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +8,13 @@
 </head>
 <body>
     <div class="container">
-        <h1>Minimalist Todo List</h1>
+        <div class="header">
+            <h1>Minimalist Todo List</h1>
+            <button id="theme-toggle" class="theme-toggle">
+                <span class="light-icon">☀️</span>
+                <span class="dark-icon">🌙</span>
+            </button>
+        </div>
         
         <div class="columns">
             <div class="column daily-tasks">

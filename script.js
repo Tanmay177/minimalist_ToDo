@@ -1,3 +1,16 @@
+// Theme handling
+const htmlElement = document.documentElement;
+const themeToggle = document.getElementById('theme-toggle');
+
+// Load theme from localStorage or default to dark mode
+const currentTheme = localStorage.getItem('theme') || 'dark';
+htmlElement.classList.toggle('dark-mode', currentTheme === 'dark');
+
+themeToggle.addEventListener('click', () => {
+    const isDarkMode = htmlElement.classList.toggle('dark-mode');
+    localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+});
+
 // Initialize tasks from localStorage or empty arrays
 let dailyTasks = JSON.parse(localStorage.getItem('dailyTasks')) || [];
 let generalTasks = JSON.parse(localStorage.getItem('generalTasks')) || [];
