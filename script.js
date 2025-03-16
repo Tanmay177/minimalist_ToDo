@@ -12,8 +12,60 @@ themeToggle.addEventListener('click', () => {
 });
 
 // Initialize tasks from localStorage or empty arrays
-let dailyTasks = JSON.parse(localStorage.getItem('dailyTasks')) || [];
+let dailyTasks = [];
 let generalTasks = JSON.parse(localStorage.getItem('generalTasks')) || [];
+
+// Load and check daily tasks
+function loadDailyTasks() {
+    const savedDailyTasks = JSON.parse(localStorage.getItem('dailyTasks')) || [];
+    const lastResetDate = localStorage.getItem('lastResetDate');
+    const today = new Date().toDateString();
+
+    if (lastResetDate !== today) {
+        // It's a new day, reset daily tasks
+        dailyTasks = [];
+        localStorage.setItem('lastResetDate', today);
+    } else {
+        // Same day, load saved tasks
+        dailyTasks = savedDailyTasks;
+    }
+}
+
+// Check for midnight reset
+function checkForReset() {
+    const now = new Date();
+    const lastResetDate = localStorage.getItem('lastResetDate');
+    
+    if (lastResetDate !== now.toDateString()) {
+        dailyTasks = [];
+        localStorage.setItem('lastResetDate', now.toDateString());
+        saveTasks();
+        renderTasks();
+    }
+}
+
+// Set up midnight check
+function setupMidnightCheck() {
+    const now = new Date();
+    const tomorrow = new Date(now);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(0, 0, 0, 0);
+    
+    const timeUntilMidnight = tomorrow - now;
+    
+    // Initial check
+    checkForReset();
+    
+    // Set up recurring check at midnight
+    setInterval(checkForReset, 60000); // Check every minute
+    
+    // Set up the first midnight check
+    setTimeout(() => {
+        checkForReset();
+        // After the first midnight, check every 24 hours
+        setInterval(checkForReset, 24 * 60 * 60 * 1000);
+    }, timeUntilMidnight);
+}
 
 // DOM Elements
 const dailyList = document.getElementById('daily-list');
@@ -137,4 +189,8 @@ taskInputs.forEach((input, index) => {
 });
 
 // Initial render
-renderTasks(); 
+renderTasks();
+
+// Initialize the app
+loadDailyTasks();
+setupMidnightCheck(); 
