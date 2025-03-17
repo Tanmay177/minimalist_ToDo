@@ -104,6 +104,10 @@ function createTaskElement(task, index, listType) {
     deleteBtn.className = 'delete-btn';
     deleteBtn.innerHTML = '×';
     
+    // Add event listeners for checkbox and delete
+    checkbox.addEventListener('change', () => toggleTask(listType, index));
+    deleteBtn.addEventListener('click', () => deleteTask(listType, index));
+    
     li.appendChild(checkbox);
     li.appendChild(taskText);
     li.appendChild(taskDate);
