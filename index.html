@@ -9,7 +9,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Minimalist Todo List</h1>
+            <h1>Minimalist To-Do List</h1>
             <button id="theme-toggle" class="theme-toggle">
                 <span class="light-icon">☀️</span>
                 <span class="dark-icon">🌙</span>
@@ -23,7 +23,7 @@
                     <input type="text" class="task-input" placeholder="Add a daily task...">
                     <button class="add-btn">+</button>
                 </div>
-                <ul class="task-list" id="daily-list"></ul>
+                <ul class="task-list" id="daily-list" data-type="daily"></ul>
             </div>
 
             <div class="column general-tasks">
@@ -32,7 +32,7 @@
                     <input type="text" class="task-input" placeholder="Add a general task...">
                     <button class="add-btn">+</button>
                 </div>
-                <ul class="task-list" id="general-list"></ul>
+                <ul class="task-list" id="general-list" data-type="general"></ul>
             </div>
         </div>
     </div>

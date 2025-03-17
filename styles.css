@@ -151,6 +151,35 @@ h2 {
     margin-bottom: 0.5rem;
     border-radius: 6px;
     animation: slideIn 0.3s ease;
+    cursor: move;
+    user-select: none;
+    position: relative;
+}
+
+.task-item::before {
+    content: '⋮⋮';
+    margin-right: 8px;
+    color: var(--text-secondary);
+    opacity: 0.5;
+    cursor: move;
+}
+
+.task-item.dragging {
+    opacity: 0.5;
+    border: 2px dashed var(--border-color);
+}
+
+.task-list.drag-over {
+    background: var(--task-bg);
+    padding: 8px;
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+}
+
+.task-item.drag-ghost {
+    background: var(--container-bg);
+    border: 2px solid var(--border-color);
+    box-shadow: 0 2px 8px var(--shadow-color);
 }
 
 .task-item.completed {

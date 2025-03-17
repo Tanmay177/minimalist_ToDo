@@ -80,9 +80,12 @@ function saveTasks() {
 }
 
 // Create task element
-function createTaskElement(task) {
+function createTaskElement(task, index, listType) {
     const li = document.createElement('li');
     li.className = `task-item ${task.completed ? 'completed' : ''}`;
+    li.draggable = true;
+    li.dataset.index = index;
+    li.dataset.type = listType;
     
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
@@ -106,33 +109,124 @@ function createTaskElement(task) {
     li.appendChild(taskDate);
     li.appendChild(deleteBtn);
     
+    // Add drag and drop event listeners
+    li.addEventListener('dragstart', handleDragStart);
+    li.addEventListener('dragend', handleDragEnd);
+    
     return li;
 }
 
-// Render tasks
+// Drag and drop handlers
+let draggedItem = null;
+let dragSourceList = null;
+
+function handleDragStart(e) {
+    draggedItem = e.target;
+    dragSourceList = e.target.closest('.task-list');
+    e.target.classList.add('dragging');
+    
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', e.target.dataset.index);
+}
+
+function handleDragEnd(e) {
+    e.target.classList.remove('dragging');
+    document.querySelectorAll('.task-list').forEach(list => {
+        list.classList.remove('drag-over');
+    });
+}
+
+function handleDragOver(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    const list = e.target.closest('.task-list');
+    if (list) {
+        list.classList.add('drag-over');
+    }
+}
+
+function handleDragLeave(e) {
+    const list = e.target.closest('.task-list');
+    if (list) {
+        list.classList.remove('drag-over');
+    }
+}
+
+function handleDrop(e) {
+    e.preventDefault();
+    const list = e.target.closest('.task-list');
+    if (!list) return;
+    
+    list.classList.remove('drag-over');
+    const sourceIndex = parseInt(draggedItem.dataset.index);
+    const sourceType = draggedItem.dataset.type;
+    const targetType = list.dataset.type;
+    
+    // Get target index based on mouse position
+    const afterElement = getDragAfterElement(list, e.clientY);
+    const targetIndex = afterElement ? 
+        parseInt(afterElement.dataset.index) :
+        (targetType === 'daily' ? dailyTasks.length : generalTasks.length);
+    
+    // Move task between arrays
+    const sourceTasks = sourceType === 'daily' ? dailyTasks : generalTasks;
+    const targetTasks = targetType === 'daily' ? dailyTasks : generalTasks;
+    
+    const [movedTask] = sourceTasks.splice(sourceIndex, 1);
+    
+    // If moving to a different list
+    if (sourceType !== targetType) {
+        targetTasks.splice(targetIndex, 0, movedTask);
+    } else {
+        // Same list, just reorder
+        sourceTasks.splice(targetIndex, 0, movedTask);
+    }
+    
+    saveTasks();
+    renderTasks();
+}
+
+function getDragAfterElement(list, y) {
+    const draggableElements = [...list.querySelectorAll('.task-item:not(.dragging)')];
+    
+    return draggableElements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        
+        if (offset < 0 && offset > closest.offset) {
+            return { offset: offset, element: child };
+        } else {
+            return closest;
+        }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+}
+
+// Add drag and drop listeners to lists
+function setupDragAndDrop() {
+    const lists = document.querySelectorAll('.task-list');
+    lists.forEach(list => {
+        list.addEventListener('dragover', handleDragOver);
+        list.addEventListener('dragleave', handleDragLeave);
+        list.addEventListener('drop', handleDrop);
+    });
+}
+
+// Modify renderTasks to call setupDragAndDrop
 function renderTasks() {
     dailyList.innerHTML = '';
     generalList.innerHTML = '';
     
     dailyTasks.forEach((task, index) => {
-        const li = createTaskElement(task);
-        
-        // Add event listeners
-        li.querySelector('.task-checkbox').addEventListener('change', () => toggleTask('daily', index));
-        li.querySelector('.delete-btn').addEventListener('click', () => deleteTask('daily', index));
-        
+        const li = createTaskElement(task, index, 'daily');
         dailyList.appendChild(li);
     });
     
     generalTasks.forEach((task, index) => {
-        const li = createTaskElement(task);
-        
-        // Add event listeners
-        li.querySelector('.task-checkbox').addEventListener('change', () => toggleTask('general', index));
-        li.querySelector('.delete-btn').addEventListener('click', () => deleteTask('general', index));
-        
+        const li = createTaskElement(task, index, 'general');
         generalList.appendChild(li);
     });
+    
+    setupDragAndDrop();
 }
 
 // Add new task
